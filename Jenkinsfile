@@ -50,9 +50,9 @@ pipeline {
     }
 
     tools {
-        // This requires SonarScanner plugin to be installed on Jenkins
-        // and SonarScanner to be configured in Global Tool Configuration
-        sonarScanner 'sonar-scanner'
+        // This uses the SonarScanner configured in Global Tool Configuration
+        // The name 'sonar-scanner' should match what you configured in Jenkins
+        'hudson.plugins.sonar.SonarRunnerInstallation' 'sonar-scanner'
     }
 
     stages {
