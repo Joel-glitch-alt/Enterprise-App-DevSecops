@@ -2,10 +2,16 @@ pipeline {
     agent any
 
     stages {
-        stage("Buid Stage") {
+        stage("Build Stage") {
             steps {
-                echo "========executing A========"
-                echo "Hello, World!"
+                echo "======== Executing Python Script ========"
+                sh 'python3 main.py'
+            }
+        }
+        stage('Run Tests') {
+            steps {
+                echo "======== Running Pytest ========"
+                sh 'pytest --maxfail=1 --disable-warnings -q'
             }
         }
     }
