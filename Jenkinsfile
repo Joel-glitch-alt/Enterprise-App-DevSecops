@@ -50,6 +50,12 @@ pipeline {
         SONARQUBE = 'Jenkins-sonar-server'
     }
 
+    tools {
+        // This requires SonarScanner plugin to be installed on Jenkins
+        // and SonarScanner to be configured in Global Tool Configuration
+        sonarScanner 'sonar-scanner'
+    }
+
     stages {
         stage("Install Dependencies") {
             steps {
