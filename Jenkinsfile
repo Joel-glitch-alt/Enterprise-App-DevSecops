@@ -52,7 +52,11 @@ pipeline {
     stages {
         stage("Install Dependencies") {
             steps {
-                sh 'pip install pytest'
+                sh '''
+                    # Install Java (required for SonarQube Scanner)
+                    apt-get update && apt-get install -y openjdk-17-jre-headless
+                    pip install pytest
+                '''
             }
         }
 
@@ -91,8 +95,8 @@ pipeline {
     
     post {
         always {
-            // Archive test results
-            publishTestResults testResultsPattern: 'pytest-report.xml'
+            // Publish test results using correct method
+            junit 'pytest-report.xml'
             cleanWs()
         }
         success {
@@ -103,5 +107,4 @@ pipeline {
         }
     }
 }
-
 ////////////////////////
