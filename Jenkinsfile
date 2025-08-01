@@ -87,8 +87,12 @@ pipeline {
                 }
             }
         }
-         post {
+    }
+    
+    post {
         always {
+            // Archive test results
+            publishTestResults testResultsPattern: 'pytest-report.xml'
             cleanWs()
         }
         success {
@@ -98,8 +102,6 @@ pipeline {
             echo 'Pipeline failed!'
         }
     }
-    }
 }
-
 
 ////////////////////////
