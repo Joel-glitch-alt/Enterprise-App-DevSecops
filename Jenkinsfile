@@ -48,9 +48,18 @@ pipeline {
                             -Dsonar.login=$SONAR_AUTH_TOKEN \
                             -Dsonar.python.version=3.10 \
                             -Dsonar.junit.reportPaths=pytest-report.xml \
-                            -Dsonar.coverageReportPaths=coverage.xml
+                            -Dsonar.python.coverage.reportPaths=coverage.xml \
+                            -Dsonar.exclusions=**/*test*/**,**/__pycache__/**
                         """
                     }
+                }
+            }
+        }
+
+        stage("Quality Gate") {
+            steps {
+                timeout(time: 1, unit: 'HOURS') {
+                    waitForQualityGate abortPipeline: true
                 }
             }
         }
