@@ -1,4 +1,3 @@
-
 pipeline {
     agent {
         docker {
@@ -14,9 +13,8 @@ pipeline {
         stage("Install Dependencies") {
             steps {
                 sh '''
-                    # Install Java (required for SonarQube Scanner)
                     apt-get update && apt-get install -y openjdk-17-jre-headless
-                    pip install pytest
+                    pip install pytest pytest-cov
                 '''
             }
         }
@@ -27,16 +25,19 @@ pipeline {
             }
         }
 
-        stage("Run Tests with Pytest") {
+        stage("Run Tests with Coverage") {
             steps {
-                sh 'pytest --maxfail=1 --disable-warnings -q --junitxml=pytest-report.xml'
+                sh '''
+                    pytest --maxfail=1 --disable-warnings -q \
+                        --junitxml=pytest-report.xml \
+                        --cov=. --cov-report=xml
+                '''
             }
         }
 
         stage("SonarQube Analysis") {
             steps {
                 script {
-                    // Get the SonarScanner tool
                     def sonarScannerHome = tool 'sonar-scanner'
                     withSonarQubeEnv("${SONARQUBE}") {
                         sh """
@@ -46,17 +47,17 @@ pipeline {
                             -Dsonar.host.url=$SONAR_HOST_URL \
                             -Dsonar.login=$SONAR_AUTH_TOKEN \
                             -Dsonar.python.version=3.10 \
-                            -Dsonar.junit.reportPaths=pytest-report.xml
+                            -Dsonar.junit.reportPaths=pytest-report.xml \
+                            -Dsonar.coverageReportPaths=coverage.xml
                         """
                     }
                 }
             }
         }
     }
-    
+
     post {
         always {
-            // Publish test results using correct method
             junit 'pytest-report.xml'
             cleanWs()
         }
@@ -68,4 +69,3 @@ pipeline {
         }
     }
 }
-
